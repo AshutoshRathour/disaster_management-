@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Requests | DMS Enterprise</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-200: #e2e8f0;
+            --slate-50: #f8fafc;
+            --blue-600: #2563eb;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--slate-50);
+            color: var(--slate-700);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: var(--slate-800);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .brand {
+            padding: 24px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--slate-700);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-links { list-style: none; padding: 24px 16px; flex: 1; }
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .nav-item a:hover, .nav-item a.active { background-color: var(--slate-700); color: white; }
+
+        .main-content { margin-left: 260px; flex: 1; padding: 40px; }
+
+        .page-header {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        h1 { font-size: 1.8rem; font-weight: 700; color: var(--slate-800); }
+        .subtitle { color: var(--slate-600); font-size: 0.95rem; margin-top: 4px; }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 32px;
+        }
+
+        .form-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--slate-200);
+            height: fit-content;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--slate-800);
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--slate-200);
+            padding-bottom: 12px;
+        }
+
+        .form-group { margin-bottom: 16px; }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--slate-700);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--slate-200);
+            border-radius: 6px;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--blue-600);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--blue-600);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn:hover { background: #1d4ed8; }
+
+        /* Table Styles */
+        .table-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--slate-200);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: var(--slate-50);
+            text-align: left;
+            padding: 16px 24px;
+            font-weight: 600;
+            color: var(--slate-600);
+            border-bottom: 1px solid var(--slate-200);
+        }
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--slate-200);
+            color: var(--slate-700);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--slate-50); }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+        .status-allocated { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
+
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="brand"><i class="fas fa-layer-group"></i> DMS Enterprise</div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="/map"><i class="fas fa-map-marked-alt"></i> Live Map</a></li>
+            <li class="nav-item"><a href="/cities"><i class="fas fa-city"></i> Cities</a></li>
+            <li class="nav-item"><a href="/roads"><i class="fas fa-road"></i> Roads</a></li>
+            <li class="nav-item"><a href="/requests" class="active"><i class="fas fa-inbox"></i> Requests</a></li>
+            <li class="nav-item"><a href="/allocate"><i class="fas fa-truck-loading"></i> Allocation</a></li>
+            <li class="nav-item"><a href="/emergency"><i class="fas fa-phone-alt"></i> Emergency</a></li>
+            <li class="nav-item"><a href="/logs"><i class="fas fa-history"></i> Logs</a></li>
+        </ul>
+        <div style="padding:24px;background:#0f172a;font-size:0.8rem;color:#64748b;"><a href="/api/logout" style="color:#ef4444;text-decoration:none;font-weight:600;"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>Emergency Requests</h1>
+                <div class="subtitle">Log and manage incoming disaster relief requirements.</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="form-card">
+                <div class="card-title">New Request Entry</div>
+                <form id="requestForm" onsubmit="submitRequest(event)">
+                    <div class="form-group">
+                        <label>Affected City</label>
+                        <select id="citySelect" required>
+                            <option value="">Select Location...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority Level (1-10)</label>
+                        <input type="number" id="priority" min="1" max="10" placeholder="e.g. 5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Resources Needed (Units)</label>
+                        <input type="number" id="resources" min="100" placeholder="e.g. 5000" required>
+                    </div>
+                    <button type="submit" class="btn"><i class="fas fa-plus"></i> Submit Request</button>
+                </form>
+            </div>
+
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Location</th>
+                            <th>Priority</th>
+                            <th>Requirement</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestTableBody">
+                        <tr><td colspan="5" style="text-align:center; padding: 20px;">Fetching data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API = '/api';
+
+        async function init() {
+            // Load Cities
+            try {
+                const res = await fetch(`${API}/city/list`);
+                const data = await res.json();
+                const select = document.getElementById('citySelect');
+                data.cities.sort((a,b) => a.name.localeCompare(b.name)).forEach(city => {
+                    select.add(new Option(city.name, city.id));
+                });
+                loadRequests();
+            } catch (e) {
+                console.error("Failed to load cities");
+            }
+        }
+
+        async function loadRequests() {
+            const res = await fetch(`${API}/request/list`);
+            const data = await res.json();
+            const tbody = document.getElementById('requestTableBody');
+            tbody.innerHTML = '';
+
+            if(data.requests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No records found.</td></tr>';
+                return;
+            }
+
+            data.requests.sort((a,b) => b.priority - a.priority).forEach(req => {
+                const tr = document.createElement('tr');
+                const statusClass = req.status === 'pending' ? 'status-pending' : 'status-allocated';
+                
+                tr.innerHTML = `
+                    <td style="font-family: monospace; color: #64748b;">#${String(req.id).padStart(4, '0')}</td>
+                    <td style="font-weight: 500;">${req.city_name}</td>
+                    <td>
+                        <div style="display:flex; align-items:center;">
+                            <span style="font-weight: 600; margin-right: 4px;">${req.priority}</span>
+                            <span style="font-size: 0.8em; color: #94a3b8;">/10</span>
+                        </div>
+                    </td>
+                    <td>${req.required.toLocaleString()} units</td>
+                    <td><span class="status-badge ${statusClass}">${req.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function submitRequest(e) {
+            e.preventDefault();
+            const city_id = parseInt(document.getElementById('citySelect').value);
+            const priority = parseInt(document.getElementById('priority').value);
+            const required_resources = parseInt(document.getElementById('resources').value);
+
+            try {
+                const res = await fetch(`${API}/request/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ city_id, priority, required_resources })
+                });
+                
+                if (res.ok) {
+                    document.getElementById('priority').value = '';
+                    document.getElementById('resources').value = '';
+                    loadRequests();
+                }
+            } catch (err) {
+                alert('Submission failed');
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disaster Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-200: #e2e8f0;
+            --slate-50: #f8fafc;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --emerald-500: #10b981;
+            --amber-500: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--slate-50);
+            color: var(--slate-700);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background-color: var(--slate-800);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .brand {
+            padding: 24px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--slate-700);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.025em;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 24px 16px;
+            flex: 1;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .nav-item a:hover, .nav-item a.active {
+            background-color: var(--slate-700);
+            color: white;
+        }
+
+        .status-footer {
+            padding: 24px;
+            background-color: #0f172a;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .status-footer a {
+            color: #ef4444;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+        }
+
+        .header {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--slate-800);
+            letter-spacing: -0.03em;
+        }
+
+        .date-badge {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--slate-200);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--slate-600);
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .kpi-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid var(--slate-200);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .kpi-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--slate-600);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--slate-800);
+        }
+
+        .kpi-sub {
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .text-emerald { color: var(--emerald-500); }
+        .text-blue { color: var(--blue-600); }
+
+        /* Quick Actions Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
+
+        .action-card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            border: 1px solid var(--slate-200);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: var(--blue-600);
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            background: #eff6ff;
+            color: var(--blue-600);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+        }
+
+        .action-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--slate-800);
+            margin-bottom: 8px;
+        }
+
+        .action-card p {
+            color: var(--slate-600);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="brand">
+            <i class="fas fa-layer-group"></i>
+            DMS Enterprise
+        </div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="/" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="/map"><i class="fas fa-map-marked-alt"></i> Live Map</a></li>
+            <li class="nav-item"><a href="/cities"><i class="fas fa-city"></i> Cities</a></li>
+            <li class="nav-item"><a href="/roads"><i class="fas fa-road"></i> Roads</a></li>
+            <li class="nav-item"><a href="/requests"><i class="fas fa-inbox"></i> Requests</a></li>
+            <li class="nav-item"><a href="/allocate"><i class="fas fa-truck-loading"></i> Allocation</a></li>
+            <li class="nav-item"><a href="/emergency"><i class="fas fa-phone-alt"></i> Emergency</a></li>
+            <li class="nav-item"><a href="/logs"><i class="fas fa-history"></i> Logs</a></li>
+        </ul>
+        <div class="status-footer">
+            <div><span style="color: #10b981">●</span> System Operational</div>
+            <div style="margin-top: 8px;"><a href="/api/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="header">
+            <div>
+                <h1>Overview</h1>
+                <p style="color: var(--slate-600); margin-top: 4px;">Welcome to the Disaster Management Command Center.</p>
+            </div>
+            <div class="date-badge" id="currentDate">
+                Loading date...
+            </div>
+        </header>
+
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Active Cities</div>
+                <div class="kpi-value" id="cityCount">-</div>
+                <div class="kpi-sub text-blue">Monitor Coverage</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Road Network</div>
+                <div class="kpi-value" id="roadCount">-</div>
+                <div class="kpi-sub text-emerald">Connections Active</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Pending Req</div>
+                <div class="kpi-value" id="reqCount">-</div>
+                <div class="kpi-sub" style="color: var(--amber-500)">Require Action</div>
+            </div>
+        </section>
+
+        <section class="actions-grid">
+            <a href="/map" class="action-card">
+                <div class="icon-box"><i class="fas fa-satellite"></i></div>
+                <h3>Geospatial View</h3>
+                <p>Access the real-time map interface to visualize affected zones and plan logistics routes.</p>
+            </a>
+            <a href="/requests" class="action-card">
+                <div class="icon-box"><i class="fas fa-clipboard-check"></i></div>
+                <h3>Request Management</h3>
+                <p>Log new emergency requests and triage incoming distress signals from affected areas.</p>
+            </a>
+            <a href="/allocate" class="action-card">
+                <div class="icon-box"><i class="fas fa-network-wired"></i></div>
+                <h3>Allocation Engine</h3>
+                <p>Execute the core algorithm to distribute resources from support hubs to impact zones.</p>
+            </a>
+            <a href="/emergency" class="action-card">
+                <div class="icon-box" style="background:#fef2f2; color:#dc2626;"><i class="fas fa-phone-alt"></i></div>
+                <h3>Emergency Numbers</h3>
+                <p>Access critical helpline numbers for disaster response, police, fire, and medical services.</p>
+            </a>
+        </section>
+    </main>
+
+    <script>
+        const API = '/api'; // Relative path since we serve from same origin now
+
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { 
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+        });
+
+        async function loadStats() {
+            try {
+                // Fetch graph info for counts
+                const graphRes = await fetch(`${API}/graph-info`);
+                const graphData = await graphRes.json();
+                
+                document.getElementById('cityCount').textContent = graphData.cities.length;
+                document.getElementById('roadCount').textContent = graphData.roads.length;
+
+                // Fetch requests for pending count
+                const reqRes = await fetch(`${API}/request/list`);
+                const reqData = await reqRes.json();
+                const pending = reqData.requests.filter(r => r.status === 'pending').length;
+                
+                document.getElementById('reqCount').textContent = pending;
+            } catch (e) {
+                console.error("Dashboard data load failed");
+            }
+        }
+
+        loadStats();
+    </script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergency Numbers | DMS Enterprise</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-200: #e2e8f0;
+            --slate-50: #f8fafc;
+            --blue-600: #2563eb;
+            --red-500: #ef4444;
+            --red-50: #fef2f2;
+            --emerald-500: #10b981;
+            --amber-500: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--slate-50);
+            color: var(--slate-700);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 260px;
+            background-color: var(--slate-800);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+        .brand {
+            padding: 24px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-bottom: 1px solid var(--slate-700);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-links { list-style: none; padding: 24px 16px; flex: 1; }
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-bottom: 4px;
+            transition: all 0.2s;
+        }
+        .nav-item a:hover, .nav-item a.active {
+            background-color: var(--slate-700);
+            color: white;
+        }
+        .status-footer {
+            padding: 24px;
+            background-color: #0f172a;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .status-footer a {
+            color: var(--red-500);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* ── Main ── */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 40px;
+        }
+        .page-header {
+            margin-bottom: 32px;
+        }
+        .page-header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--slate-800);
+        }
+        .page-header p {
+            color: var(--slate-600);
+            margin-top: 4px;
+            font-size: 0.95rem;
+        }
+
+        /* ── SOS Banner ── */
+        .sos-banner {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            padding: 24px 32px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+        .sos-banner i {
+            font-size: 2.5rem;
+        }
+        .sos-banner h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .sos-banner p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .sos-banner .sos-number {
+            margin-left: auto;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        /* ── Emergency Grid ── */
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .emergency-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--slate-200);
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .emergency-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+        }
+        .card-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .icon-red { background: #fef2f2; color: #dc2626; }
+        .icon-blue { background: #eff6ff; color: #2563eb; }
+        .icon-amber { background: #fffbeb; color: #d97706; }
+        .icon-green { background: #f0fdf4; color: #16a34a; }
+        .icon-purple { background: #faf5ff; color: #9333ea; }
+        .card-info { flex: 1; }
+        .card-info h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--slate-800);
+            margin-bottom: 2px;
+        }
+        .card-info .category {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+        .card-number {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--blue-600);
+            white-space: nowrap;
+        }
+        .card-number a {
+            color: inherit;
+            text-decoration: none;
+        }
+        .card-number a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Category Filter ── */
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-tag {
+            padding: 8px 16px;
+            border-radius: 99px;
+            border: 1px solid var(--slate-200);
+            background: white;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--slate-600);
+            cursor: default;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .filter-tag i { font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="brand"><i class="fas fa-layer-group"></i> DMS Enterprise</div>
+        <ul class="nav-links">
+            <li class="nav-item"><a href="/"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="/map"><i class="fas fa-map-marked-alt"></i> Live Map</a></li>
+            <li class="nav-item"><a href="/cities"><i class="fas fa-city"></i> Cities</a></li>
+            <li class="nav-item"><a href="/roads"><i class="fas fa-road"></i> Roads</a></li>
+            <li class="nav-item"><a href="/requests"><i class="fas fa-inbox"></i> Requests</a></li>
+            <li class="nav-item"><a href="/allocate"><i class="fas fa-truck-loading"></i> Allocation</a></li>
+            <li class="nav-item"><a href="/emergency" class="active"><i class="fas fa-phone-alt"></i> Emergency</a></li>
+            <li class="nav-item"><a href="/logs"><i class="fas fa-history"></i> Logs</a></li>
+        </ul>
+        <div class="status-footer">
+            <div><span style="color: #10b981">●</span> System Operational</div>
+            <div style="margin-top: 8px;"><a href="/api/logout"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1><i class="fas fa-phone-alt" style="color: var(--red-500);"></i> Emergency Numbers</h1>
+            <p>Critical helpline numbers for disaster and emergency response across India.</p>
+        </div>
+
+        <!-- SOS Banner -->
+        <div class="sos-banner">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <h2>National Emergency</h2>
+                <p>For any life-threatening emergency, call immediately</p>
+            </div>
+            <div class="sos-number"><a href="tel:112" style="color:white;text-decoration:none;">112</a></div>
+        </div>
+
+        <!-- Category Tags -->
+        <div class="filter-bar">
+            <span class="filter-tag"><i class="fas fa-circle" style="color:#dc2626;"></i> Disaster</span>
+            <span class="filter-tag"><i class="fas fa-circle" style="color:#2563eb;"></i> Law Enforcement</span>
+            <span class="filter-tag"><i class="fas fa-circle" style="color:#d97706;"></i> Fire</span>
+            <span class="filter-tag"><i class="fas fa-circle" style="color:#16a34a;"></i> Medical</span>
+            <span class="filter-tag"><i class="fas fa-circle" style="color:#9333ea;"></i> Safety &amp; Relief</span>
+        </div>
+
+        <!-- Emergency Cards (static HTML — no JS needed) -->
+        <div class="emergency-grid">
+
+            <div class="emergency-card">
+                <div class="card-icon icon-red"><i class="fas fa-shield-alt"></i></div>
+                <div class="card-info">
+                    <h3>National Disaster Response Force (NDRF)</h3>
+                    <div class="category">Disaster</div>
+                </div>
+                <div class="card-number"><a href="tel:01124363260">011-2436-3260</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-blue"><i class="fas fa-user-shield"></i></div>
+                <div class="card-info">
+                    <h3>Police</h3>
+                    <div class="category">Law Enforcement</div>
+                </div>
+                <div class="card-number"><a href="tel:100">100</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-amber"><i class="fas fa-fire-extinguisher"></i></div>
+                <div class="card-info">
+                    <h3>Fire Brigade</h3>
+                    <div class="category">Fire</div>
+                </div>
+                <div class="card-number"><a href="tel:101">101</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-green"><i class="fas fa-ambulance"></i></div>
+                <div class="card-info">
+                    <h3>Ambulance</h3>
+                    <div class="category">Medical</div>
+                </div>
+                <div class="card-number"><a href="tel:102">102</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-red"><i class="fas fa-house-damage"></i></div>
+                <div class="card-info">
+                    <h3>Disaster Management (NDMA)</h3>
+                    <div class="category">Disaster</div>
+                </div>
+                <div class="card-number"><a href="tel:1078">1078</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-purple"><i class="fas fa-female"></i></div>
+                <div class="card-info">
+                    <h3>Women Helpline</h3>
+                    <div class="category">Safety</div>
+                </div>
+                <div class="card-number"><a href="tel:1091">1091</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-purple"><i class="fas fa-child"></i></div>
+                <div class="card-info">
+                    <h3>Child Helpline</h3>
+                    <div class="category">Safety</div>
+                </div>
+                <div class="card-number"><a href="tel:1098">1098</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-amber"><i class="fas fa-car-crash"></i></div>
+                <div class="card-info">
+                    <h3>Road Accident Emergency</h3>
+                    <div class="category">Accident</div>
+                </div>
+                <div class="card-number"><a href="tel:1073">1073</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-red"><i class="fas fa-water"></i></div>
+                <div class="card-info">
+                    <h3>Earthquake / Flood / Disaster</h3>
+                    <div class="category">Disaster</div>
+                </div>
+                <div class="card-number"><a href="tel:01126701728">011-2670-1728</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-green"><i class="fas fa-plus-square"></i></div>
+                <div class="card-info">
+                    <h3>Indian Red Cross Society</h3>
+                    <div class="category">Relief</div>
+                </div>
+                <div class="card-number"><a href="tel:01123359379">011-2335-9379</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-green"><i class="fas fa-helicopter"></i></div>
+                <div class="card-info">
+                    <h3>Air Ambulance</h3>
+                    <div class="category">Medical</div>
+                </div>
+                <div class="card-number"><a href="tel:9540161344">9540161344</a></div>
+            </div>
+
+            <div class="emergency-card">
+                <div class="card-icon icon-blue"><i class="fas fa-life-ring"></i></div>
+                <div class="card-info">
+                    <h3>Coast Guard</h3>
+                    <div class="category">Rescue</div>
+                </div>
+                <div class="card-number"><a href="tel:1554">1554</a></div>
+            </div>
+
+        </div>
+    </main>
+</body>
+</html>

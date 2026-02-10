@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roads - Disaster Relief</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+        }
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header a {
+            color: #3498db;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        select, input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🛣️ Road Management</h1>
+        <a href="/">← Back to Dashboard</a>
+        <a href="/emergency" style="margin-left:15px;color:#ef4444;">📞 Emergency</a>
+        <a href="/api/logout" style="margin-left:15px;color:#e74c3c;">Logout</a>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Add New Road Connection</h2>
+            <form onsubmit="addRoad(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Source City:</label>
+                        <select id="srcCity" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Destination City:</label>
+                        <select id="destCity" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Distance (km):</label>
+                        <input type="number" id="distance" min="1" required>
+                    </div>
+                </div>
+                <button type="submit">Add Road</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>All Roads</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Source City</th>
+                        <th>Destination City</th>
+                        <th>Distance (km)</th>
+                    </tr>
+                </thead>
+                <tbody id="roadsTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API = '/api';
+        let cities = [];
+
+        async function loadCities() {
+            const response = await fetch(`${API}/city/list`);
+            const data = await response.json();
+            cities = data.cities;
+
+            const srcSelect = document.getElementById('srcCity');
+            const destSelect = document.getElementById('destCity');
+            
+            srcSelect.innerHTML = '';
+            destSelect.innerHTML = '';
+
+            cities.forEach(city => {
+                srcSelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
+                destSelect.innerHTML += `<option value="${city.id}">${city.name}</option>`;
+            });
+        }
+
+        async function addRoad(e) {
+            e.preventDefault();
+            
+            const src = parseInt(document.getElementById('srcCity').value);
+            const dest = parseInt(document.getElementById('destCity').value);
+
+            if (src === dest) {
+                alert('Source and destination must be different!');
+                return;
+            }
+
+            const data = {
+                src: src,
+                dest: dest,
+                distance: parseInt(document.getElementById('distance').value)
+            };
+
+            const response = await fetch(`${API}/road/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('Road added successfully!');
+                document.getElementById('distance').value = '';
+                loadRoads();
+            }
+        }
+
+        async function loadRoads() {
+            const response = await fetch(`${API}/road/list`);
+            const data = await response.json();
+            
+            const tbody = document.getElementById('roadsTable');
+            tbody.innerHTML = '';
+            
+            data.roads.forEach(road => {
+                const srcCity = cities.find(c => c.id === road.src);
+                const destCity = cities.find(c => c.id === road.dest);
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${road.id}</td>
+                        <td><strong>${srcCity ? srcCity.name : 'Unknown'}</strong></td>
+                        <td><strong>${destCity ? destCity.name : 'Unknown'}</strong></td>
+                        <td>${road.distance} km</td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function init() {
+            await loadCities();
+            await loadRoads();
+        }
+
+        init();
+    </script>
+</body>
+</html>
